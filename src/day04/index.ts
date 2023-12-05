@@ -1,4 +1,5 @@
-import { readInputLines, WSet } from "../utils"
+import _ from "lodash";
+import { readInputLines } from "../utils"
 
 export const solve = () => {
     const lines = readInputLines("input/day04.txt")
@@ -12,8 +13,8 @@ export const solve = () => {
 
 type Play = {
     id: number,
-    winningNumbers: WSet<number>,
-    drawnNumbers: WSet<number>,
+    winningNumbers: Set<number>,
+    drawnNumbers: Set<number>,
 }
 
 const parseInput = (s: string[]): Play[] => {
@@ -32,10 +33,9 @@ const parseLine = (s: string): Play => {
 
     return {
         id,
-        winningNumbers: new WSet(parseNumberList(winNumsS)),
-        drawnNumbers: new WSet(parseNumberList(drawnNumsS))
+        winningNumbers: new Set(parseNumberList(winNumsS)),
+        drawnNumbers: new Set(parseNumberList(drawnNumsS))
     }
-
 }
 
 const parseNumberList = (s: string): number[] => {
@@ -43,7 +43,7 @@ const parseNumberList = (s: string): number[] => {
 }
 
 const countMatches = (p: Play): number => {
-    return p.drawnNumbers.intersection(p.winningNumbers).size()
+    return _.intersection([...p.drawnNumbers], [...p.winningNumbers]).length
 }
 
 const calculateWinnings = (p: Play): number => {

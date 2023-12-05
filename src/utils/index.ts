@@ -1,5 +1,4 @@
 import fs from "fs"
-import WSet from "./wset"
 
 export const readInput = (path: string): string => {
     return fs.readFileSync(path).toString()
@@ -10,5 +9,3 @@ export const readInputLines = (path: string): string[] => {
 
     return contents.split("\n")
 }
-
-export { WSet }

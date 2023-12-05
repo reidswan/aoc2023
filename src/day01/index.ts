@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { readInputLines } from "../utils";
 
 export const solve = () => {
@@ -42,28 +43,18 @@ const findNumber = (s: string, digitFilter: (s: string) => number[]): number => 
 }
 
 const digitWordStartingAt = (s: string, i: number): number | undefined => {
-    for (const [digitWord, digit] of Object.entries(wordyDigits)) {
-        if (s.substring(i).startsWith(digitWord)) {
-            return digit
-        }
-    }
+    const found = _.entries(wordyDigits)
+        .find(([digitWord]) => s.substring(i).startsWith(digitWord)) || []
 
-    return undefined
+    return found[1]
 }
 
 const filterWordyDigits = (s: string): number[] => {
-    const res = [];
-
-    for (let i = 0; i < s.length; i++) {
+    return _.range(s.length).map((i) => {
         if (digits.includes(s.charAt(i))) {
-            res.push(parseInt(s.charAt(i)))
+            return parseInt(s.charAt(i))
         } else {
-            const digit = digitWordStartingAt(s, i);
-            if (digit !== undefined) {
-                res.push(digit)
-            }
+            return digitWordStartingAt(s, i);
         }
-    }
-
-    return res
+    }).filter(it => it !== undefined) as number[]
 }

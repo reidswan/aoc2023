@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { readInput } from "../utils";
 
 export const solve = () => {
@@ -53,7 +54,7 @@ const parseInput = (src: string): Input => {
 
         const name = nameRe.groups["name"];
         const ranges = lines.map(parseMapRange)
-        ranges.sort((r1, r2) => r1.sourceStart - r2.sourceStart)
+        ranges.sort((a, b) => a.sourceStart - b.sourceStart)
         return {
             name,
             ranges,
@@ -87,58 +88,71 @@ const findInMap = (map: Map, item: number): number => {
 }
 
 const traverseSeedToLocation = (maps: Map[], seed: number): number => {
-    let current = seed;
-
-    for (const map of maps) {
-        current = findInMap(map, current)
-    }
-
-    return current
+    return maps.reduce((acc, map) => findInMap(map, acc), seed)
 }
 
-const findNextLocationRanges = (seedRange: SeedRange, map: Map): SeedRange[] => {
-    const ranges: SeedRange[] = []
-    let currStart = seedRange.start;
-    let remainingCount = seedRange.count;
-    while (remainingCount > 0) {
-        let range = map.ranges.find(range => range.sourceStart <= currStart && currStart < range.sourceStart + range.count);
-        if (range === undefined) {
-            // If not explicitly listed, it maps to itself; find where the next range would start
-            const nextMapStarts = map.ranges.filter(r => r.sourceStart > currStart).map(r => r.sourceStart);
-            if (nextMapStarts.length !== 0) {
-                // Convert into an 'identity' range
-                const nextStart = Math.min(...nextMapStarts);
-                range = { sourceStart: currStart, destinationStart: currStart, count: nextStart - currStart }
-            } else {
-                // There is no next map, so use all remaining count
-                ranges.push({ start: currStart, count: remainingCount })
-                break
-            }
+const traverseSeedRange = (seedRange: SeedRange, map: Map): SeedRange[] => {
+    const ranges: SeedRange[] = [];
+    const remainder = map.ranges.reduce((seedRange, mapRange) => {
+        if (seedRange.count <= 0) {
+            // Short circuit
+            return seedRange
         }
 
-        const destinationStart = range.destinationStart + (currStart - range.sourceStart);
-        const countFromOffset = range.count - (destinationStart - range.destinationStart);
-        ranges.push({ start: destinationStart, count: Math.min(countFromOffset, remainingCount) });
-        remainingCount -= countFromOffset
-        currStart += countFromOffset
+        if (seedRange.start < mapRange.sourceStart) {
+            // Section not explicitly mapped; use values directly
+            ranges.push({
+                start: seedRange.start,
+                count: Math.min(seedRange.count, mapRange.sourceStart - seedRange.start),
+            })
+
+            seedRange = { start: mapRange.sourceStart, count: seedRange.count - (mapRange.sourceStart - seedRange.start) }
+        }
+
+        const { overlap, remainder } = findOverlap(mapRange, seedRange);
+        if (overlap !== undefined) {
+            ranges.push(overlap)
+        }
+
+        return remainder
+    }, seedRange)
+
+    if (remainder.count > 0) {
+        ranges.push(remainder);
     }
 
     return ranges
 }
 
-const traverseSeedRangeToLocations = (range: SeedRange, maps: Map[]): SeedRange[] => {
-    let currRanges = [range];
-    for (const map of maps) {
-        currRanges = currRanges.map(range => findNextLocationRanges(range, map)).flat()
+const overlaps = (m: MapRange, s: SeedRange): boolean => {
+    return m.sourceStart <= s.start && s.start < m.sourceStart + m.count
+}
+
+const findOverlap = (m: MapRange, s: SeedRange): { overlap: SeedRange | undefined, remainder: SeedRange } => {
+    if (!overlaps(m, s)) {
+        return { overlap: undefined, remainder: s }
     }
-    return currRanges
+
+    const offset = m.destinationStart - m.sourceStart;
+    const start = s.start + offset;
+    const count = Math.min(m.count - (s.start - m.sourceStart), s.count);
+
+    const remainingCount = s.count - count;
+    const excessStart = s.start + count;
+
+    return {
+        overlap: { start, count },
+        remainder: { start: excessStart, count: remainingCount },
+    }
+}
+
+const traverseSeedRangeToLocations = (range: SeedRange, maps: Map[]): SeedRange[] => {
+    return maps.reduce(
+        (ranges, map) =>
+            ranges.map(range => traverseSeedRange(range, map)).flat(),
+        [range])
 }
 
 const makeSeedRanges = (src: number[]): SeedRange[] => {
-    const res = [];
-    for (let i = 0; i < src.length - 1; i += 2) {
-        res.push({ start: src[i], count: src[i + 1] })
-    }
-
-    return res
+    return _.chunk(src, 2).map(([start, count]) => ({ start, count }))
 }
