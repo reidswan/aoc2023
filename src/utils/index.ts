@@ -9,3 +9,7 @@ export const readInputLines = (path: string): string[] => {
 
     return contents.split("\n")
 }
+
+export const isNumeric = (s: string): boolean => {
+    return !!s.match(/[0-9]+/)
+}
