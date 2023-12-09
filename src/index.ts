@@ -1,11 +1,12 @@
-import * as day01 from "./day01"
-import * as day02 from "./day02"
-import * as day03 from "./day03"
-import * as day04 from "./day04"
-import * as day05 from "./day05"
-import * as day06 from "./day06"
-import * as day07 from "./day07"
-import * as day08 from "./day08"
+import * as day01 from "./days/01"
+import * as day02 from "./days/02"
+import * as day03 from "./days/03"
+import * as day04 from "./days/04"
+import * as day05 from "./days/05"
+import * as day06 from "./days/06"
+import * as day07 from "./days/07"
+import * as day08 from "./days/08"
+import * as day09 from "./days/09"
 
 const days: { [key: string]: { solve: () => void } } = {
     "1": day01,
@@ -16,6 +17,7 @@ const days: { [key: string]: { solve: () => void } } = {
     "6": day06,
     "7": day07,
     "8": day08,
+    "9": day09,
 }
 const possibleDays = Object.keys(days)
 
