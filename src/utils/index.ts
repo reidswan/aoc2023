@@ -25,3 +25,25 @@ export const gcd = (a: number, b: number): number => {
 export const leastCommonMultiple = (a: number, b: number): number => {
     return a * b / gcd(a, b)
 }
+
+export const filterMap = <T, U>(iter: T[], fn: (item: T, index: number) => U | undefined): U[] => {
+    return iter.reduce((acc, item, index) => {
+        const res = fn(item, index)
+        if (res !== undefined) {
+            acc.push(res)
+        }
+        return acc
+    }, [] as U[])
+}
+
+export type Coord = {
+    x: number,
+    y: number
+}
+
+export const get = <T>(src: T[][], coord: Coord): T | undefined => {
+    const row = src[coord.y]
+    if (row !== undefined) {
+        return row[coord.x]
+    }
+}
