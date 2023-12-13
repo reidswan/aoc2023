@@ -97,14 +97,12 @@ const findReflectionInHashesWithSmudge = (hashes: number[]): number | undefined 
 }
 
 const matchesWithSmudge = (a: number, b: number): boolean => {
-    let xor = a ^ b;
-    if (xor === 0) return false;
+    if (a == b) return false
 
-    while (xor % 2 !== 1) {
-        xor = xor >>> 1
-    }
-
-    return (xor >>> 1) === 0
+    // Two numbers differ by a single bit if (a xor b) == 2^n for some n
+    // And if x = 2^n, then x = 10000... and x-1 = 01111..., so (x & x-1) == 0
+    const xor = a ^ b;
+    return (xor & (xor - 1)) === 0
 }
 
 const checkMatch = (hashes: number[], upperIndex: number, lowerIndex: number): boolean => {
