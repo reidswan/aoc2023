@@ -147,8 +147,8 @@ export class Map<K, V> {
     }
 }
 
-export const cachedFn = <Args extends unknown[], Result>(fn: (...args: Args) => Result): (...args: Args) => Result => {
-    const cache = new Map<Args, Result>();
+export const cachedFn = <Args extends unknown[], Result>(fn: (...args: Args) => Result, key?: (args: Args) => string): (...args: Args) => Result => {
+    const cache = new Map<Args, Result>(key);
     return (...args: Args): Result => {
         if (cache.has(args)) {
             return cache.get(args)!
