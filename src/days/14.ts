@@ -54,14 +54,15 @@ const rollNorth = (rockMap: RockMap): RockMap => {
     const roundByCol = _.groupBy(rockMap.roundRocks, rock => rock.x)
     const roundRocks = _.keys(roundByCol).map(col => {
         const roundRocks = roundByCol[col].sort((a, b) => a.y - b.y)
-        const squareRocks = [...(rockMap.squareRocksByCol[col] || [])]
+        const squareRocks = rockMap.squareRocksByCol[col] || []
+        let squareRocksIndex = 0
         let rollsTo = 0
         return roundRocks.map(({ x: col, y: row }) => {
-            let nextSquare = _.head(squareRocks)
+            let nextSquare = squareRocks[squareRocksIndex]
             while (nextSquare && (nextSquare.y <= rollsTo || nextSquare.y < row)) {
                 rollsTo = Math.max(rollsTo, nextSquare.y + 1)
-                squareRocks.shift()
-                nextSquare = _.head(squareRocks)
+                squareRocksIndex++
+                nextSquare = squareRocks[squareRocksIndex]
             }
             const rollsToCoord = { x: col, y: rollsTo }
             rollsTo++
@@ -79,14 +80,15 @@ const rollWest = (rockMap: RockMap): RockMap => {
     const roundByRow = _.groupBy(rockMap.roundRocks, rock => rock.y)
     const roundRocks = _.keys(roundByRow).map(row => {
         const roundRocks = roundByRow[row].sort((a, b) => a.x - b.x)
-        const squareRocks = [...(rockMap.squareRocksByRow[row] || [])]
+        const squareRocks = rockMap.squareRocksByRow[row] || []
+        let squareRocksIndex = 0
         let rollsTo = 0
         return roundRocks.map(({ x: col, y: row }) => {
-            let nextSquare = _.head(squareRocks)
+            let nextSquare = squareRocks[squareRocksIndex]
             while (nextSquare && (nextSquare.x <= rollsTo || nextSquare.x < col)) {
                 rollsTo = Math.max(rollsTo, nextSquare.x + 1)
-                squareRocks.shift()
-                nextSquare = _.head(squareRocks)
+                squareRocksIndex++
+                nextSquare = squareRocks[squareRocksIndex]
             }
             const rollsToCoord = { x: rollsTo, y: row }
             rollsTo++
@@ -104,14 +106,15 @@ const rollSouth = (rockMap: RockMap): RockMap => {
     const roundByCol = _.groupBy(rockMap.roundRocks, rock => rock.x)
     const roundRocks = _.keys(roundByCol).map(col => {
         const roundRocks = roundByCol[col].sort((a, b) => b.y - a.y)
-        const squareRocks = [...(rockMap.squareRocksByCol[col] || [])]
+        const squareRocks = rockMap.squareRocksByCol[col] || []
+        let squareRockIndex = squareRocks.length - 1
         let rollsTo = rockMap.gridHeight - 1
         return roundRocks.map(({ x: col, y: row }) => {
-            let nextSquare = _.last(squareRocks)
+            let nextSquare = squareRocks[squareRockIndex]
             while (nextSquare && (nextSquare.y >= rollsTo || nextSquare.y > row)) {
                 rollsTo = Math.min(rollsTo, nextSquare.y - 1)
-                squareRocks.pop()
-                nextSquare = _.last(squareRocks)
+                squareRockIndex--
+                nextSquare = squareRocks[squareRockIndex]
             }
             const rollsToCoord = { x: col, y: rollsTo }
             rollsTo--
@@ -129,14 +132,15 @@ const rollEast = (rockMap: RockMap): RockMap => {
     const roundByRow = _.groupBy(rockMap.roundRocks, rock => rock.y)
     const roundRocks = _.keys(roundByRow).map(row => {
         const roundRocks = roundByRow[row].sort((a, b) => b.x - a.x)
-        const squareRocks = [...(rockMap.squareRocksByRow[row] || [])]
+        const squareRocks = rockMap.squareRocksByRow[row] || []
+        let squareRockIndex = squareRocks.length - 1
         let rollsTo = rockMap.gridWidth - 1
         return roundRocks.map(({ x: col, y: row }) => {
-            let nextSquare = _.last(squareRocks)
+            let nextSquare = squareRocks[squareRockIndex]
             while (nextSquare && (nextSquare.x >= rollsTo || nextSquare.x > col)) {
                 rollsTo = Math.min(rollsTo, nextSquare.x - 1)
-                squareRocks.pop()
-                nextSquare = _.last(squareRocks)
+                squareRockIndex--
+                nextSquare = squareRocks[squareRockIndex]
             }
             const rollsToCoord = { x: rollsTo, y: row }
             rollsTo--
