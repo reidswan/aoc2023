@@ -1,7 +1,7 @@
-import { Coord, get, readInput, Set } from "../utils"
+import { Coord, get, readInputGrid, Set } from "../utils"
 
 export const solve = () => {
-    const grid = parseInput(readInput("input/day16.txt"))
+    const grid = parseInput(readInputGrid("input/day16.txt"))
     const energizedCount = countEnergizedCells(grid, { location: { x: -1, y: 0 }, direction: Direction.Right })
     console.log("Part 1:", energizedCount)
 
@@ -29,8 +29,8 @@ type Beam = {
     direction: Direction,
 }
 
-const parseInput = (s: string): TileType[][] => {
-    return s.split("\n").map(line => line.split("").map(c => {
+const parseInput = (s: string[][]): TileType[][] => {
+    return s.map(row => row.map(c => {
         switch (c) {
             case '.':
                 return TileType.Empty

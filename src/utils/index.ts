@@ -11,6 +11,10 @@ export const readInputLines = (path: string): string[] => {
     return contents.split("\n")
 }
 
+export const readInputGrid = (path: string): string[][] => {
+    return readInputLines(path).map(line => line.split(""))
+}
+
 export const isNumeric = (s: string): boolean => {
     return !!s.match(/[0-9]+/)
 }
@@ -40,6 +44,10 @@ export const filterMap = <T, U>(iter: T[], fn: (item: T, index: number) => U | u
 export type Coord = {
     x: number,
     y: number
+}
+
+export const addCoords = ({ x: x1, y: y1 }: Coord, { x: x2, y: y2 }: Coord): Coord => {
+    return { x: x1 + x2, y: y1 + y2 }
 }
 
 export const get = <T>(src: T[][], coord: Coord): T | undefined => {

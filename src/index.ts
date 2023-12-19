@@ -14,6 +14,7 @@ import * as day13 from "./days/13"
 import * as day14 from "./days/14"
 import * as day15 from "./days/15"
 import * as day16 from "./days/16"
+import * as day17 from "./days/17"
 
 const days: { [key: string]: { solve: () => void } } = {
     "1": day01,
@@ -32,6 +33,7 @@ const days: { [key: string]: { solve: () => void } } = {
     "14": day14,
     "15": day15,
     "16": day16,
+    "17": day17,
 }
 const possibleDays = Object.keys(days)
 
