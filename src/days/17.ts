@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { readInputGrid, Coord, addCoords, get } from "../utils"
-import FastPriorityQueue from "fastpriorityqueue"
+import { HeapQueue } from "../utils/heapqueue"
 
 export const solve = () => {
     const grid = readInputGrid("input/day17.txt").map(row => row.map(cell => parseInt(cell)))
@@ -16,12 +16,12 @@ type QueueEntry = {
 
 const computeMinHeatLoss = (grid: number[][], minSteps: number, maxSteps: number): number => {
     const end = { x: grid[0].length - 1, y: grid.length - 1 }
-    const queue: FastPriorityQueue<QueueEntry> = new FastPriorityQueue((a, b) => a.heatLoss < b.heatLoss)
-    queue.add({ location: { x: 0, y: 0 }, heatLoss: 0, direction: { x: 0, y: 0 } })
+    const queue: HeapQueue<QueueEntry> = new HeapQueue((a, b) => a.heatLoss < b.heatLoss)
+    queue.enqueue({ location: { x: 0, y: 0 }, heatLoss: 0, direction: { x: 0, y: 0 } })
     const seen = new Set<string>()
 
-    while (!queue.isEmpty()) {
-        const { heatLoss, location, direction } = queue.poll()!
+    while (queue.size() > 0) {
+        const { heatLoss, location, direction } = queue.dequeue()!
         if (_.isEqual(end, location)) {
             return heatLoss
         }
@@ -40,7 +40,7 @@ const computeMinHeatLoss = (grid: number[][], minSteps: number, maxSteps: number
                 if (!validLocation(grid, nextLoc)) { continue }
                 loss += get(grid, nextLoc)!;
                 if (i >= minSteps) {
-                    queue.add({ location: nextLoc, direction: d, heatLoss: loss })
+                    queue.enqueue({ location: nextLoc, direction: d, heatLoss: loss })
                 }
             }
         })
