@@ -19,6 +19,7 @@ const days: { [key: string]: string } = {
     "18": "./days/18",
     "19": "./days/19",
     "20": "./days/20",
+    "21": "./days/21",
 }
 const possibleDays = Object.keys(days)
 
@@ -33,9 +34,9 @@ const dayToRun = (): string => {
 
 const day = dayToRun()
 
-if (!possibleDays.includes(day)) {
-    console.error(`Unrecognized day: ${day}`)
-} else {
+if (day in days) {
     console.log(`==== Day ${day} ====`)
     import(days[day]).then(m => m.solve())
+} else {
+    console.error(`Unrecognized day: ${day}`)
 }

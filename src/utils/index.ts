@@ -70,8 +70,8 @@ export class Set<T> {
         }
     }
 
-    add(t: T) {
-        this.set[this.hash(t)] = t
+    add(...ts: T[]) {
+        ts.forEach(t => this.set[this.hash(t)] = t)
     }
 
     has(t: T): boolean {
@@ -151,7 +151,8 @@ export class Map<K, V> {
     }
 
     get(k: K): V | undefined {
-        return this._map[this.hash(k)][1]
+        const entry = this._map[this.hash(k)]
+        if (entry) return entry[1]
     }
 }
 
@@ -167,3 +168,5 @@ export const cachedFn = <Args extends unknown[], Result>(fn: (...args: Args) => 
         return result
     }
 }
+
+export const hashCoord = ({ x, y }: Coord): string => [x, y].join()

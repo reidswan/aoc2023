@@ -1,6 +1,6 @@
 export class HeapQueue<T> {
-    heap: T[] = []
-    currentSize: number = 0
+    private heap: T[] = []
+    private currentSize: number = 0
     private lessThan: (a: T, b: T) => boolean
 
     constructor(lessThan: (a: T, b: T) => boolean) {
