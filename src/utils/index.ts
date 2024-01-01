@@ -1,5 +1,4 @@
 import fs from "fs"
-import _ from "lodash";
 
 export const readInput = (path: string): string => {
     return fs.readFileSync(path).toString()
@@ -58,11 +57,11 @@ export const get = <T>(src: T[][], coord: Coord): T | undefined => {
 }
 
 export class Set<T> {
-    set: { [key: string]: T }
-    hash: (it: T) => string
+    set: Map<string | number, T>
+    hash: (it: T) => string | number
 
-    constructor(hash?: (it: T) => string) {
-        this.set = {}
+    constructor(hash?: (it: T) => string | number) {
+        this.set = new Map<string | number, T>()
         if (hash) {
             this.hash = hash
         } else {
@@ -70,21 +69,22 @@ export class Set<T> {
         }
     }
 
-    add(...ts: T[]) {
-        ts.forEach(t => this.set[this.hash(t)] = t)
+    add(...ts: T[]): Set<T> {
+        ts.forEach(t => this.set.set(this.hash(t), t))
+        return this
     }
 
     has(t: T): boolean {
-        return this.set[this.hash(t)] !== undefined
+        return this.set.has(this.hash(t))
     }
 
     clear() {
-        this.set = {}
+        this.set = new Map<string | number, T>()
     }
 
     remove(t: T): boolean {
         if (this.has(t)) {
-            delete this.set[this.hash(t)]
+            this.set.delete(this.hash(t))
             return true
         }
 
@@ -96,16 +96,22 @@ export class Set<T> {
     }
 
     values(): T[] {
-        return _.values(this.set)
+        return [...this.set.values()]
+    }
+
+    clone(): Set<T> {
+        const clone = new Set<T>(this.hash)
+        clone.set = new Map<string | number, T>(this.set.entries())
+        return clone
     }
 }
 
-export class Map<K, V> {
-    _map: { [key: string]: [K, V] }
-    hash: (it: K) => string
+export class Map_<K, V> {
+    _map: Map<string | number, [K, V]>
+    hash: (it: K) => string | number
 
-    constructor(hash?: (it: K) => string) {
-        this._map = {}
+    constructor(hash?: (it: K) => string | number) {
+        this._map = new Map()
         if (hash) {
             this.hash = hash
         } else {
@@ -114,20 +120,20 @@ export class Map<K, V> {
     }
 
     add(k: K, v: V) {
-        this._map[this.hash(k)] = [k, v]
+        this._map.set(this.hash(k), [k, v])
     }
 
     has(k: K): boolean {
-        return this._map[this.hash(k)] !== undefined
+        return this._map.has(this.hash(k))
     }
 
     clear() {
-        this._map = {}
+        this._map = new Map()
     }
 
     remove(k: K): boolean {
         if (this.has(k)) {
-            delete this._map[this.hash(k)]
+            this._map.delete(this.hash(k))
             return true
         }
 
@@ -139,7 +145,7 @@ export class Map<K, V> {
     }
 
     items(): [K, V][] {
-        return _.values(this._map)
+        return [...this._map.values()]
     }
 
     keys(): K[] {
@@ -150,14 +156,15 @@ export class Map<K, V> {
         return this.items().map(([, v]) => v)
     }
 
-    get(k: K): V | undefined {
-        const entry = this._map[this.hash(k)]
+    get(k: K, defaultV?: V): V | undefined {
+        const entry = this._map.get(this.hash(k))
         if (entry) return entry[1]
+        else return defaultV
     }
 }
 
 export const cachedFn = <Args extends unknown[], Result>(fn: (...args: Args) => Result, key?: (args: Args) => string): (...args: Args) => Result => {
-    const cache = new Map<Args, Result>(key);
+    const cache = new Map_<Args, Result>(key);
     return (...args: Args): Result => {
         if (cache.has(args)) {
             return cache.get(args)!

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Coord, readInput, Map } from "../utils"
+import { Coord, readInput, Map_ } from "../utils"
 
 export const solve = () => {
     const input = readInput("input/day14.txt");
@@ -156,7 +156,7 @@ const rollEast = (rockMap: RockMap): RockMap => {
 
 
 const spin = (rockMap: RockMap): RockMap => {
-    const seen = new Map<Coord[], number>();
+    const seen = new Map_<Coord[], number>();
     const end = 1000000000
     for (let i = 0; i < end; i++) {
         rockMap = spinOnce(rockMap)

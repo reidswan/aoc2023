@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Coord, addCoords, Set, get, readInputGrid, Map, hashCoord } from "../utils"
+import { Coord, addCoords, Set, get, readInputGrid, Map_, hashCoord } from "../utils"
 import { HeapQueue } from "../utils/heapqueue"
 
 export const solve = () => {
@@ -66,11 +66,11 @@ const neighbors = (coord: Coord): Coord[] => {
     return cardinals.map(c => addCoords(c, coord))
 }
 
-const computeShortestDistances = (locations: PlotType[][], from: Coord): Map<Coord, number> => {
+const computeShortestDistances = (locations: PlotType[][], from: Coord): Map_<Coord, number> => {
     const queue = new HeapQueue<{ loc: Coord, dist: number }>((a, b) => a.dist < b.dist)
     queue.enqueue({ loc: from, dist: 0 })
 
-    const shortests = new Map<Coord, number>(hashCoord)
+    const shortests = new Map_<Coord, number>(hashCoord)
     shortests.add(from, 0)
 
     const visited = new Set<Coord>(hashCoord);
