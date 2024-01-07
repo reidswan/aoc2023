@@ -22,7 +22,9 @@ const days: { [key: string]: string } = {
     "21": "./days/21",
     "22": "./days/22",
     "23": "./days/23",
+    "24": "./days/24",
 }
+
 const possibleDays = Object.keys(days)
 
 const dayToRun = (): string => {

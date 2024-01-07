@@ -19,6 +19,9 @@ export const isNumeric = (s: string): boolean => {
 }
 
 export const gcd = (a: number, b: number): number => {
+    a = Math.abs(a)
+    b = Math.abs(b)
+
     while (b != 0) {
         [a, b] = [b, a % b]
     }
@@ -177,3 +180,51 @@ export const cachedFn = <Args extends unknown[], Result>(fn: (...args: Args) => 
 }
 
 export const hashCoord = ({ x, y }: Coord): string => [x, y].join()
+
+export const gcdExt = (a: number, b: number): { gcd: number, x: number, y: number } => {
+    if (a === 0) return { gcd: b, x: 0, y: 1 }
+
+    const { gcd, x: x1, y: y1 } = gcdExt(b % a, a)
+
+    const x = y1 - Math.floor(b / a) * x1
+    const y = x1
+
+    return { gcd, x, y }
+}
+
+export const crt = (remainders: number[], moduli: number[]): number | undefined => {
+    if (remainders.length !== moduli.length) {
+        throw new Error("mismatch between number of remainders and moduli")
+    }
+
+    if (remainders.length === 0) return undefined
+    if (remainders.length === 1) return remainders[0]
+
+    // eslint-disable-next-line prefer-const
+    let [rAcc, ...rem] = remainders
+    // eslint-disable-next-line prefer-const
+    let [mAcc, ...mod] = moduli
+
+    while (rem.length) {
+        let r = rem.pop()!
+        const m = mod.pop()!
+        if (r < 0) r += m
+
+        const div = gcd(mAcc, m)
+        if (rAcc % div !== r % div) {
+            return undefined
+        }
+
+        const { x, y } = gcdExt(mAcc / div, m / div)
+        const m_ = (mAcc * m / div)
+        rAcc = (rAcc * (m / div) * y + r * (mAcc / div) * x) % m_
+
+        if (rAcc < 0) {
+            rAcc += m_
+        }
+
+        mAcc = m_
+    }
+
+    return rAcc % mAcc
+}
