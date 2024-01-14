@@ -23,6 +23,7 @@ const days: { [key: string]: string } = {
   "22": "./days/22",
   "23": "./days/23",
   "24": "./days/24",
+  "25": "./days/25",
 };
 
 const possibleDays = Object.keys(days);
